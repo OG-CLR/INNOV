@@ -92,8 +92,8 @@
     <!-- Sondage -->
     <div class="survey-container">
       <h2>Ce projet vous intéresse-t-il ?</h2>
-      <button class="survey-button" onclick="sendVote('Ca m interesse')">Ça m’intéresse</button>
-      <button class="survey-button" onclick="sendVote('Ca ne me convient pas')">
+      <button class="survey-button" onclick="sendVote('Ça m’intéresse')">Ça m’intéresse</button>
+      <button class="survey-button" onclick="sendVote('Ça ne me convient pas totalement')">
         Ça ne me convient pas totalement
       </button>
       <div id="survey-message" class="survey-message"></div>
@@ -106,7 +106,7 @@
     // ------------------------------
     function setCookie(name, value, days) {
       let date = new Date();
-      date.setTime(date.getTime() + (days*24*60*60*1000));
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
       let expires = "expires=" + date.toUTCString();
       document.cookie = name + "=" + value + ";" + expires + ";path=/";
     }
@@ -125,50 +125,47 @@
     }
 
     // ------------------------------
-    // Vérification du cookie "voted"
+    // Vérification du cookie "hasVoted"
     // ------------------------------
     function hasVotedAlready() {
       return getCookie("hasVoted") === "true";
     }
 
     // ------------------------------
-    // Envoi du vote
+    // Envoi du vote via un formulaire caché et ouverture dans un nouvel onglet
     // ------------------------------
     function sendVote(reponse) {
       const msg = document.getElementById("survey-message");
 
-      // Vérifie si déjà voté
+      // Vérifie si l'utilisateur a déjà voté
       if (hasVotedAlready()) {
         msg.textContent = "Vous avez déjà voté, merci !";
         return;
       }
 
-      // Si vous voulez envoyer vers Google Forms, il faut récupérer l’URL de « POST »
-      // d’un formulaire Google. Prenons un exemple fictif :
-      // https://docs.google.com/forms/d/e/[ID_DU_FORM]/formResponse
-      // Avec un "entry.XYZ" correspondant au champ qui recevra la valeur "reponse".
+      // Crée un formulaire caché pour soumettre le vote
+      let form = document.createElement("form");
+      form.method = "POST";
+      // URL de soumission du formulaire Google Forms (endpoint formResponse)
+      form.action = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse";
+      form.target = "_blank"; // Ouvre la soumission dans un nouvel onglet
 
-      const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/viewform?usp=header";
-      // Nom du champ (entry.xxx) qu’on récupère via l’inspecteur de Google Forms :
-      const formField = "entry.1534549768";
+      // Ajoute le champ caché avec la réponse
+      let input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "entry.1534549768";
+      input.value = reponse;
+      form.appendChild(input);
 
-      // Prépare la requête
-      let formData = new FormData();
-      formData.append(formField, reponse);
+      // Ajoute le formulaire au body et le soumet
+      document.body.appendChild(form);
+      form.submit();
 
-      fetch(formUrl, {
-        method: "POST",
-        mode: "no-cors", // Google Forms accepte le no-cors
-        body: formData
-      }).then(() => {
-        msg.textContent = "Merci pour votre vote !";
-        // Place un cookie pour empêcher un nouveau vote
-        setCookie("hasVoted", "true", 365); 
-      }).catch((error) => {
-        // En cas d’erreur, on le signale
-        console.error("Erreur lors de l’envoi du vote :", error);
-        msg.textContent = "Une erreur est survenue, merci de réessayer plus tard.";
-      });
+      // Affiche un message de remerciement
+      msg.textContent = "Merci pour votre vote !";
+
+      // Place un cookie pour empêcher un nouveau vote
+      setCookie("hasVoted", "true", 365);
     }
   </script>
 </body>
