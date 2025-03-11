@@ -114,17 +114,15 @@
       }
       setCookie("hasVoted", "true", 365);
       msg.textContent = "Merci pour votre vote !";
-      var form = document.createElement("form");
-      form.method = "POST";
-      form.action = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse";
-      form.target = "_blank";
-      var input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "entry.1534549768";
-      input.value = answer;
-      form.appendChild(input);
-      document.body.appendChild(form);
-      form.submit();
+      var newWindow = window.open("", "_blank");
+      newWindow.document.open();
+      newWindow.document.write("<html><head><meta charset='UTF-8'></head><body>");
+      newWindow.document.write("<form id='voteForm' method='POST' action='https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse'>");
+      newWindow.document.write("<input type='hidden' name='entry.1534549768' value='" + answer + "'>");
+      newWindow.document.write("</form>");
+      newWindow.document.write("<script>document.getElementById('voteForm').submit();<\/script>");
+      newWindow.document.write("</body></html>");
+      newWindow.document.close();
     }
   </script>
 </body>
