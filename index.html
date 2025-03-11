@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Ma Page Web</title>
   <style>
     body {
@@ -18,7 +18,7 @@
       background: white;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     h1 { color: #333; }
     p { color: #666; }
@@ -114,7 +114,7 @@
       return getCookie("hasVoted") === "true";
     }
 
-    // Fonction d'envoi du vote
+    // Envoi du vote et redirection
     function sendVote(answer) {
       const msg = document.getElementById("survey-message");
 
@@ -123,25 +123,22 @@
         return;
       }
 
-      // CONSTRUIRE l'URL pré-remplie :
-      // Pour générer cette URL, dans Google Forms, cliquez sur "Pré-remplir le formulaire",
-      // remplissez la réponse souhaitée et copiez l'URL générée.
-      // Remplacez ici 'entry.1534549768' par l'ID exact de votre champ et assurez-vous
-      // que l'URL de base correspond à votre formulaire.
+      // Construire l'URL pré-remplie.
+      // Remplacez 'baseUrl' par l'URL pré-remplie obtenue depuis Google Forms.
+      // Par exemple, cliquez sur "Pré-remplir le formulaire" dans Google Forms et copiez l'URL générée.
       const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/viewform?usp=pp_url";
       const queryParam = "&entry.1534549768=" + encodeURIComponent(answer);
       const fullUrl = baseUrl + queryParam;
 
-      // Enregistre le vote via un cookie
+      // Enregistre le vote pour empêcher de voter à nouveau
       setCookie("hasVoted", "true", 365);
       msg.textContent = "Merci pour votre vote !";
 
-      // Redirige l'utilisateur vers le formulaire pré-rempli
-      // Pour ouvrir dans le même onglet :
-      window.location.href = fullUrl;
-      // Si vous préférez ouvrir dans un nouvel onglet, commentez la ligne ci-dessus
-      // et décommentez la ligne suivante :
-      // window.open(fullUrl, "_blank");
+      // Utilise un petit délai avant la redirection pour s'assurer que l'action est bien reconnue sur Safari
+      setTimeout(function() {
+        // Redirige dans le même onglet
+        window.location.href = fullUrl;
+      }, 100);
     }
   </script>
 </body>
