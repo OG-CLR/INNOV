@@ -91,18 +91,18 @@
   <script>
     // Fonctions de gestion des cookies
     function setCookie(name, value, days) {
-      const date = new Date();
-      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-      const expires = "expires=" + date.toUTCString();
+      var date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      var expires = "expires=" + date.toUTCString();
       document.cookie = name + "=" + value + ";" + expires + ";path=/";
     }
 
     function getCookie(name) {
-      const decodedCookie = decodeURIComponent(document.cookie);
-      const ca = decodedCookie.split(";");
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(";");
       name = name + "=";
-      for (let i = 0; i < ca.length; i++) {
-        let c = ca[i].trim();
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i].trim();
         if (c.indexOf(name) === 0) {
           return c.substring(name.length);
         }
@@ -114,31 +114,37 @@
       return getCookie("hasVoted") === "true";
     }
 
-    // Envoi du vote et redirection
+    // Fonction d'envoi du vote
     function sendVote(answer) {
-      const msg = document.getElementById("survey-message");
+      var msg = document.getElementById("survey-message");
 
+      // Si l'utilisateur a déjà voté, on affiche un message et on arrête
       if (hasVotedAlready()) {
         msg.textContent = "Vous avez déjà voté, merci !";
         return;
       }
 
-      // Construire l'URL pré-remplie.
-      // Remplacez 'baseUrl' par l'URL pré-remplie obtenue depuis Google Forms.
-      // Par exemple, cliquez sur "Pré-remplir le formulaire" dans Google Forms et copiez l'URL générée.
-      const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/viewform?usp=pp_url";
-      const queryParam = "&entry.1534549768=" + encodeURIComponent(answer);
-      const fullUrl = baseUrl + queryParam;
-
-      // Enregistre le vote pour empêcher de voter à nouveau
+      // On enregistre le vote pour empêcher un double vote
       setCookie("hasVoted", "true", 365);
       msg.textContent = "Merci pour votre vote !";
 
-      // Utilise un petit délai avant la redirection pour s'assurer que l'action est bien reconnue sur Safari
-      setTimeout(function() {
-        // Redirige dans le même onglet
-        window.location.href = fullUrl;
-      }, 100);
+      // Création d'un formulaire caché
+      var form = document.createElement("form");
+      form.method = "POST";
+      // URL de l'action de votre Google Form (endpoint formResponse)
+      form.action = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse";
+      form.target = "_self"; // Ouvre dans le même onglet
+
+      // Créez un champ caché pour la réponse (vérifiez le nom exact du champ)
+      var input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "entry.1534549768";
+      input.value = answer;
+      form.appendChild(input);
+
+      // Ajoutez le formulaire au document et soumettez-le immédiatement
+      document.body.appendChild(form);
+      form.submit();
     }
   </script>
 </body>
