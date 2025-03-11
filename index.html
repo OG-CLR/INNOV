@@ -76,18 +76,12 @@
 <body>
   <div class="container">
     <h1>En cas d'inondations, sauvons les meubles!</h1>
-    <p>
-      Il est souvent long et pénible de remettre en état sa maison après le passage d'une inondation, meubles détruits, sols difficiles à nettoyer...
-    </p>
+    <p>Il est souvent long et pénible de remettre en état sa maison après le passage d'une inondation, meubles détruits, sols difficiles à nettoyer ...</p>
     <div class="images">
       <img src="image3.jpg" alt="Troisième image">
-      <p>
-        Notre technologie vise à préserver votre logement par un système de poulies et de treuil évitant à vos meubles de prendre l'eau.
-      </p>
+      <p>Notre technologie vise à préserver votre logement par un système de poulies et de treuil évitant à vos meubles de prendre l'eau.</p>
       <img src="image2.png" alt="Deuxième image">
-      <p>
-        Vous n'aurez plus qu'une surface au sol à nettoyer et votre salon sera intact.
-      </p>
+      <p>Vous n'aurez plus qu'une surface au sol à nettoyer et votre salon sera intact.</p>
       <img src="image1.png" alt="Première image">
     </div>
     <p>Cette solution innovante permet de mettre rapidement et sans effort vos meubles en sécurité.</p>
@@ -132,7 +126,7 @@
       return getCookie("hasVoted") === "true";
     }
 
-    // Fonction pour envoyer le vote et ouvrir le formulaire dans un nouvel onglet
+    // Envoi du vote et redirection dans le même onglet
     function sendVote(reponse) {
       const msg = document.getElementById("survey-message");
 
@@ -141,31 +135,29 @@
         return;
       }
 
-      // Ouvre la page du sondage dans un nouvel onglet
-      window.open(
-        "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/viewform?usp=header",
-        "_blank"
-      );
+      // URL d'envoi du vote (formResponse)
+      const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse";
+      // Prépare les données à envoyer
+      const data = new URLSearchParams();
+      data.append("entry.1534549768", reponse);
 
-      // Envoie la réponse via une requête POST en mode no-cors
-      fetch("https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse", {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: new URLSearchParams({
-          "entry.1534549768": reponse
-        })
-      })
-      .then(() => {
-        msg.textContent = "Merci pour votre vote !";
-        setCookie("hasVoted", "true", 365);
-      })
-      .catch((error) => {
-        console.error("Erreur lors de l'envoi du vote :", error);
-        msg.textContent = "Une erreur est survenue, merci de réessayer plus tard.";
-      });
+      // Utilise navigator.sendBeacon si disponible, sinon fetch
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(formUrl, data);
+      } else {
+        fetch(formUrl, {
+          method: "POST",
+          mode: "no-cors",
+          body: data
+        });
+      }
+
+      // Enregistre le vote via un cookie
+      setCookie("hasVoted", "true", 365);
+      msg.textContent = "Merci pour votre vote !";
+
+      // Redirige vers le formulaire (page de sondage) dans le même onglet
+      window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/viewform?usp=header";
     }
   </script>
 </body>
