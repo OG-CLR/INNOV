@@ -20,12 +20,8 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    h1 {
-      color: #333;
-    }
-    p {
-      color: #666;
-    }
+    h1 { color: #333; }
+    p { color: #666; }
     .button {
       display: inline-block;
       padding: 10px 20px;
@@ -36,12 +32,8 @@
       text-decoration: none;
       border-radius: 5px;
     }
-    .button:hover {
-      background-color: #0056b3;
-    }
-    .images {
-      margin-top: 20px;
-    }
+    .button:hover { background-color: #0056b3; }
+    .images { margin-top: 20px; }
     .images img {
       max-width: 100%;
       height: auto;
@@ -49,9 +41,7 @@
       border-radius: 5px;
     }
     /* Boutons du sondage */
-    .survey-container {
-      margin-top: 20px;
-    }
+    .survey-container { margin-top: 20px; }
     .survey-button {
       display: inline-block;
       padding: 10px 20px;
@@ -63,9 +53,7 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    .survey-button:hover {
-      background-color: #218838;
-    }
+    .survey-button:hover { background-color: #218838; }
     .survey-message {
       margin-top: 10px;
       font-weight: bold;
@@ -126,7 +114,7 @@
       return getCookie("hasVoted") === "true";
     }
 
-    // Envoi du vote et redirection dans le même onglet
+    // Envoi du vote en soumettant un formulaire caché et redirection dans le même onglet
     function sendVote(reponse) {
       const msg = document.getElementById("survey-message");
 
@@ -135,29 +123,24 @@
         return;
       }
 
-      // URL d'envoi du vote (formResponse)
-      const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse";
-      // Prépare les données à envoyer
-      const data = new URLSearchParams();
-      data.append("entry.1534549768", reponse);
-
-      // Utilise navigator.sendBeacon si disponible, sinon fetch
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon(formUrl, data);
-      } else {
-        fetch(formUrl, {
-          method: "POST",
-          mode: "no-cors",
-          body: data
-        });
-      }
+      // Crée un formulaire caché
+      let form = document.createElement("form");
+      form.method = "POST";
+      form.action = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse";
+      // IMPORTANT : assurez-vous que le nom du champ correspond exactement à celui de votre Google Form.
+      let input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "entry.1534549768"; // Remplacez par l'ID exact de votre champ
+      input.value = reponse;
+      form.appendChild(input);
+      document.body.appendChild(form);
 
       // Enregistre le vote via un cookie
       setCookie("hasVoted", "true", 365);
       msg.textContent = "Merci pour votre vote !";
 
-      // Redirige vers le formulaire (page de sondage) dans le même onglet
-      window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/viewform?usp=header";
+      // Soumet le formulaire pour rediriger vers la page du formulaire dans le même onglet
+      form.submit();
     }
   </script>
 </body>
