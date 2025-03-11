@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Ma Page Web</title>
   <style>
     body {
@@ -109,26 +109,25 @@
   <script>
     // Fonctions de gestion des cookies
     function setCookie(name, value, days) {
-      let date = new Date();
+      const date = new Date();
       date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-      let expires = "expires=" + date.toUTCString();
+      const expires = "expires=" + date.toUTCString();
       document.cookie = name + "=" + value + ";" + expires + ";path=/";
     }
 
     function getCookie(name) {
-      let decodedCookie = decodeURIComponent(document.cookie);
-      let ca = decodedCookie.split(";");
+      const decodedCookie = decodeURIComponent(document.cookie);
+      const ca = decodedCookie.split(";");
       name = name + "=";
       for (let i = 0; i < ca.length; i++) {
         let c = ca[i].trim();
         if (c.indexOf(name) === 0) {
-          return c.substring(name.length, c.length);
+          return c.substring(name.length);
         }
       }
       return "";
     }
 
-    // Vérifie si l'utilisateur a déjà voté
     function hasVotedAlready() {
       return getCookie("hasVoted") === "true";
     }
@@ -142,33 +141,31 @@
         return;
       }
 
-      // Création d'un formulaire caché pour soumettre le vote
-      let form = document.createElement("form");
-      form.method = "POST";
-      // Utilisez l'URL de l'endpoint formResponse pour enregistrer la réponse
-      form.action = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse";
-      
-      // Ajoute un champ caché avec le nom exact du champ Google Forms (sans "_sentinel")
-      let input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "entry.1534549768";
-      input.value = reponse;
-      form.appendChild(input);
-
-      document.body.appendChild(form);
-      form.submit();
-      document.body.removeChild(form);
-
-      // Ouvre la page publiée du formulaire dans un nouvel onglet
+      // Ouvre la page du sondage dans un nouvel onglet
       window.open(
         "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/viewform?usp=header",
         "_blank"
       );
 
-      // Place un cookie pour empêcher de voter à nouveau
-      setCookie("hasVoted", "true", 365);
-
-      msg.textContent = "Merci pour votre vote !";
+      // Envoie la réponse via une requête POST en mode no-cors
+      fetch("https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse", {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+          "entry.1534549768": reponse
+        })
+      })
+      .then(() => {
+        msg.textContent = "Merci pour votre vote !";
+        setCookie("hasVoted", "true", 365);
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'envoi du vote :", error);
+        msg.textContent = "Une erreur est survenue, merci de réessayer plus tard.";
+      });
     }
   </script>
 </body>
