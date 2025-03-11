@@ -1,52 +1,52 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Ma Page Web</title>
   <style>
     body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
     }
     .container {
-        max-width: 600px;
-        margin: 100px auto;
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      margin: 100px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     h1 {
-        color: #333;
+      color: #333;
     }
     p {
-        color: #666;
+      color: #666;
     }
     .button {
-        display: inline-block;
-        padding: 10px 20px;
-        margin-top: 20px;
-        font-size: 16px;
-        color: white;
-        background-color: #007BFF;
-        text-decoration: none;
-        border-radius: 5px;
+      display: inline-block;
+      padding: 10px 20px;
+      margin-top: 20px;
+      font-size: 16px;
+      color: white;
+      background-color: #007BFF;
+      text-decoration: none;
+      border-radius: 5px;
     }
     .button:hover {
-        background-color: #0056b3;
+      background-color: #0056b3;
     }
     .images {
-        margin-top: 20px;
+      margin-top: 20px;
     }
     .images img {
-        max-width: 100%;
-        height: auto;
-        margin: 10px 0;
-        border-radius: 5px;
+      max-width: 100%;
+      height: auto;
+      margin: 10px 0;
+      border-radius: 5px;
     }
     /* Boutons du sondage */
     .survey-container {
@@ -76,12 +76,18 @@
 <body>
   <div class="container">
     <h1>En cas d'inondations, sauvons les meubles!</h1>
-    <p>Il est souvent long et pénible de remettre en état sa maison après le passage d'une inondation, meubles détruits, sols difficiles à nettoyer ...</p>
+    <p>
+      Il est souvent long et pénible de remettre en état sa maison après le passage d'une inondation, meubles détruits, sols difficiles à nettoyer...
+    </p>
     <div class="images">
       <img src="image3.jpg" alt="Troisième image">
-      <p>Notre technologie vise à préserver votre logement par un système de poulies et de treuil évitant à vos meubles de prendre l'eau.</p>
+      <p>
+        Notre technologie vise à préserver votre logement par un système de poulies et de treuil évitant à vos meubles de prendre l'eau.
+      </p>
       <img src="image2.png" alt="Deuxième image">
-      <p>Vous n'aurez plus qu'une surface au sol à nettoyer et votre salon sera intact.</p>
+      <p>
+        Vous n'aurez plus qu'une surface au sol à nettoyer et votre salon sera intact.
+      </p>
       <img src="image1.png" alt="Première image">
     </div>
     <p>Cette solution innovante permet de mettre rapidement et sans effort vos meubles en sécurité.</p>
@@ -101,19 +107,17 @@
   </div>
 
   <script>
-    // ------------------------------
-    // Fonctions Cookie basiques
-    // ------------------------------
+    // Fonctions de gestion des cookies
     function setCookie(name, value, days) {
       let date = new Date();
-      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
       let expires = "expires=" + date.toUTCString();
       document.cookie = name + "=" + value + ";" + expires + ";path=/";
     }
 
     function getCookie(name) {
       let decodedCookie = decodeURIComponent(document.cookie);
-      let ca = decodedCookie.split(';');
+      let ca = decodedCookie.split(";");
       name = name + "=";
       for (let i = 0; i < ca.length; i++) {
         let c = ca[i].trim();
@@ -124,48 +128,47 @@
       return "";
     }
 
-    // ------------------------------
-    // Vérification du cookie "hasVoted"
-    // ------------------------------
+    // Vérifie si l'utilisateur a déjà voté
     function hasVotedAlready() {
       return getCookie("hasVoted") === "true";
     }
 
-    // ------------------------------
-    // Envoi du vote via un formulaire caché et ouverture dans un nouvel onglet
-    // ------------------------------
+    // Fonction pour envoyer le vote et ouvrir le formulaire dans un nouvel onglet
     function sendVote(reponse) {
       const msg = document.getElementById("survey-message");
 
-      // Vérifie si l'utilisateur a déjà voté
       if (hasVotedAlready()) {
         msg.textContent = "Vous avez déjà voté, merci !";
         return;
       }
 
-      // Crée un formulaire caché pour soumettre le vote
+      // Création d'un formulaire caché pour soumettre le vote
       let form = document.createElement("form");
       form.method = "POST";
-      // URL de soumission du formulaire Google Forms (endpoint formResponse)
+      // Utilisez l'URL de l'endpoint formResponse pour enregistrer la réponse
       form.action = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse";
-      form.target = "_blank"; // Ouvre la soumission dans un nouvel onglet
-
-      // Ajoute le champ caché avec la réponse
+      
+      // Ajoute un champ caché avec le nom exact du champ Google Forms (sans "_sentinel")
       let input = document.createElement("input");
       input.type = "hidden";
-      input.name = "entry.1534549768_sentinel";
+      input.name = "entry.1534549768";
       input.value = reponse;
       form.appendChild(input);
 
-      // Ajoute le formulaire au body et le soumet
       document.body.appendChild(form);
       form.submit();
+      document.body.removeChild(form);
 
-      // Affiche un message de remerciement
-      msg.textContent = "Merci pour votre vote !";
+      // Ouvre la page publiée du formulaire dans un nouvel onglet
+      window.open(
+        "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/viewform?usp=header",
+        "_blank"
+      );
 
-      // Place un cookie pour empêcher un nouveau vote
+      // Place un cookie pour empêcher de voter à nouveau
       setCookie("hasVoted", "true", 365);
+
+      msg.textContent = "Merci pour votre vote !";
     }
   </script>
 </body>
