@@ -40,7 +40,6 @@
       margin: 10px 0;
       border-radius: 5px;
     }
-    /* Boutons du sondage */
     .survey-container { margin-top: 20px; }
     .survey-button {
       display: inline-block;
@@ -76,8 +75,6 @@
     <p>Adaptable à la plupart des maisons, l'installation du système est comprise dans l'achat.</p>
     <p>Soyez serein en mettant définitivement votre habitation à l'abri.</p>
     <a href="#" class="button">En savoir plus</a>
-
-    <!-- Sondage -->
     <div class="survey-container">
       <h2>Ce projet vous intéresse-t-il ?</h2>
       <button class="survey-button" onclick="sendVote('Ça m’intéresse')">Ça m’intéresse</button>
@@ -87,16 +84,13 @@
       <div id="survey-message" class="survey-message"></div>
     </div>
   </div>
-
   <script>
-    // Fonctions de gestion des cookies
     function setCookie(name, value, days) {
       var date = new Date();
       date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
       var expires = "expires=" + date.toUTCString();
       document.cookie = name + "=" + value + ";" + expires + ";path=/";
     }
-
     function getCookie(name) {
       var decodedCookie = decodeURIComponent(document.cookie);
       var ca = decodedCookie.split(";");
@@ -109,40 +103,26 @@
       }
       return "";
     }
-
     function hasVotedAlready() {
       return getCookie("hasVoted") === "true";
     }
-
-    // Fonction d'envoi du vote
     function sendVote(answer) {
       var msg = document.getElementById("survey-message");
-
-      // Si l'utilisateur a déjà voté, on affiche un message et on arrête
       if (hasVotedAlready()) {
         msg.textContent = "Vous avez déjà voté, merci !";
         return;
       }
-
-      // On enregistre le vote pour empêcher un double vote
       setCookie("hasVoted", "true", 365);
       msg.textContent = "Merci pour votre vote !";
-
-      // Création d'un formulaire caché
       var form = document.createElement("form");
       form.method = "POST";
-      // URL de l'action de votre Google Form (endpoint formResponse)
       form.action = "https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse";
-      form.target = "_self"; // Ouvre dans le même onglet
-
-      // Créez un champ caché pour la réponse (vérifiez le nom exact du champ)
+      form.target = "_blank";
       var input = document.createElement("input");
       input.type = "hidden";
       input.name = "entry.1534549768";
       input.value = answer;
       form.appendChild(input);
-
-      // Ajoutez le formulaire au document et soumettez-le immédiatement
       document.body.appendChild(form);
       form.submit();
     }
