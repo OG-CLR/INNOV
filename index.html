@@ -63,7 +63,7 @@
 <body>
   <div class="container">
     <h1>En cas d'inondations, sauvons les meubles!</h1>
-    <!-- Visitor counter display -->
+    <!-- Affichage du compteur de visiteurs -->
     <p>Nombre de visiteurs : <span id="visitorCount">0</span></p>
     
     <p>Il est souvent long et pénible de remettre en état sa maison après le passage d'une inondation, meubles détruits, sols difficiles à nettoyer ...</p>
@@ -78,21 +78,22 @@
     <p>Adaptable à la plupart des maisons, l'installation du système est comprise dans l'achat.</p>
     <p>Soyez serein en mettant définitivement votre habitation à l'abri.</p>
     
-    <!-- Button with click counter -->
-    <a href="#" class="button" id="mainButton">En savoir plus</a>
-    <p>Nombre de clics sur le bouton : <span id="buttonCount">0</span></p>
+    <!-- Bouton "En savoir plus" (reste inchangé) -->
+    <a href="#" class="button" id="moreButton">En savoir plus</a>
     
+    <!-- Section sondage avec compteur sur le bouton "Ça m’intéresse" -->
     <div class="survey-container">
       <h2>Ce projet vous intéresse-t-il ?</h2>
-      <button class="survey-button" onclick="sendVote('Ça m’intéresse')">Ça m’intéresse</button>
+      <button class="survey-button" id="interestButton">Ça m’intéresse</button>
       <button class="survey-button" onclick="sendVote('Ça ne me convient pas totalement')">
         Ça ne me convient pas totalement
       </button>
+      <p>Nombre de votes pour "Ça m’intéresse" : <span id="buttonCount">0</span></p>
       <div id="survey-message" class="survey-message"></div>
     </div>
   </div>
   <script>
-    // Functions for cookie handling (used for the survey vote)
+    // Fonctions de gestion des cookies (pour le vote)
     function setCookie(name, value, days) {
       var date = new Date();
       date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -114,6 +115,7 @@
     function hasVotedAlready() {
       return getCookie("hasVoted") === "true";
     }
+    // Fonction pour envoyer le vote via Google Forms
     function sendVote(answer) {
       var msg = document.getElementById("survey-message");
       if (hasVotedAlready()) {
@@ -122,6 +124,8 @@
       }
       setCookie("hasVoted", "true", 365);
       msg.textContent = "Merci pour votre vote !";
+      
+      // Ouvre une nouvelle fenêtre pour soumettre le formulaire de vote
       var newWindow = window.open("", "_blank");
       newWindow.document.open();
       newWindow.document.write("<html><head><meta charset='UTF-8'></head><body>");
@@ -134,13 +138,13 @@
     }
     
     // -------------------------------
-    // CountAPI Integration for counters
+    // Intégration CountAPI pour les compteurs
     // -------------------------------
-    // Change 'YOUR_NAMESPACE' to a unique identifier (ex. your GitHub username)
-    const visitorUrl = 'https://api.countapi.xyz/hit/SauvezLesMeubles/visitorCounter';
-    const buttonUrl  = 'https://api.countapi.xyz/hit/SauvezLesMeubles/buttonCounter';
+
+    const visitorUrl = 'https://api.countapi.xyz/hit/SauvezLesMeubles_Projet_Innov/visitorCounter';
+    const interestUrl  = 'https://api.countapi.xyz/hit/SauvezLesMeubles_Projet_Innov/interestCounter';
     
-    // Increment and display the visitor counter on page load
+    // Incrémente et affiche le compteur de visiteurs lors du chargement de la page
     fetch(visitorUrl)
       .then(response => response.json())
       .then(data => {
@@ -148,15 +152,22 @@
       })
       .catch(console.error);
     
-    // Attach an event listener to the "En savoir plus" button to update the button click counter
-    document.getElementById("mainButton").addEventListener('click', function(e) {
-      e.preventDefault(); // Empêche le comportement par défaut du lien
-      fetch(buttonUrl)
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById("buttonCount").innerText = data.value;
-        })
-        .catch(console.error);
+    // Ajoute un listener sur le bouton "Ça m’intéresse"
+    document.getElementById("interestButton").addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Incrémente le compteur si l'utilisateur n'a pas déjà voté
+      if (!hasVotedAlready()) {
+        fetch(interestUrl)
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById("buttonCount").innerText = data.value;
+          })
+          .catch(console.error);
+      }
+      
+      // Envoie le vote
+      sendVote("Ça m’intéresse");
     });
   </script>
 </body>
