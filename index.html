@@ -93,7 +93,7 @@
     </div>
   </div>
   <script>
-    // Fonctions de gestion des cookies (pour le vote)
+    // Fonctions de gestion des cookies (pour éviter les votes multiples)
     function setCookie(name, value, days) {
       var date = new Date();
       date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -140,33 +140,38 @@
     // -------------------------------
     // Intégration CountAPI pour les compteurs
     // -------------------------------
-
-    const visitorUrl = 'https://api.countapi.xyz/hit/SauvezLesMeubles_Projet_Innov/visitorCounter';
-    const interestUrl  = 'https://api.countapi.xyz/hit/SauvezLesMeubles_Projet_Innov/interestCounter';
+    // D'après la documentation, il est recommandé d'utiliser le nom de domaine de votre site pour le namespace.
+    // Ici, nous utilisons un namespace simplifié en minuscules sans caractères spéciaux.
+    const visitorUrl = 'https://api.countapi.xyz/hit/sauvezlesmeubles/visitors';
+    const interestUrl  = 'https://api.countapi.xyz/hit/sauvezlesmeubles/interest';
     
     // Incrémente et affiche le compteur de visiteurs lors du chargement de la page
     fetch(visitorUrl)
       .then(response => response.json())
       .then(data => {
+        console.log("Visitor counter data:", data);
         document.getElementById("visitorCount").innerText = data.value;
       })
-      .catch(console.error);
+      .catch(error => console.error("Erreur visitorCount:", error));
     
     // Ajoute un listener sur le bouton "Ça m’intéresse"
     document.getElementById("interestButton").addEventListener('click', function(e) {
       e.preventDefault();
+      console.log("Bouton 'Ça m’intéresse' cliqué");
       
-      // Incrémente le compteur si l'utilisateur n'a pas déjà voté
       if (!hasVotedAlready()) {
         fetch(interestUrl)
           .then(response => response.json())
           .then(data => {
+            console.log("Interest counter data:", data);
             document.getElementById("buttonCount").innerText = data.value;
           })
-          .catch(console.error);
+          .catch(error => console.error("Erreur interestCount:", error));
+      } else {
+        console.log("L'utilisateur a déjà voté.");
       }
       
-      // Envoie le vote
+      // Envoie le vote via Google Forms
       sendVote("Ça m’intéresse");
     });
   </script>
