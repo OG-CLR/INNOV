@@ -2,68 +2,15 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ma Page Web</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 100px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 { color: #333; }
-    p { color: #666; }
-    .button {
-      display: inline-block;
-      padding: 10px 20px;
-      margin-top: 20px;
-      font-size: 16px;
-      color: white;
-      background-color: #007BFF;
-      text-decoration: none;
-      border-radius: 5px;
-    }
-    .button:hover { background-color: #0056b3; }
-    .images { margin-top: 20px; }
-    .images img {
-      max-width: 100%;
-      height: auto;
-      margin: 10px 0;
-      border-radius: 5px;
-    }
-    .survey-container { margin-top: 20px; }
-    .survey-button {
-      display: inline-block;
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 16px;
-      color: white;
-      background-color: #28a745;
-      text-decoration: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .survey-button:hover { background-color: #218838; }
-    .survey-message {
-      margin-top: 10px;
-      font-weight: bold;
-      color: #333;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
+  <!-- Chargement de la bibliothèque CountAPI-JS depuis un CDN -->
+  <script src="https://unpkg.com/countapi-js@latest/dist/countapi.min.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>En cas d'inondations, sauvons les meubles!</h1>
-    <!-- Affichage du compteur de visiteurs -->
     <p>Nombre de visiteurs : <span id="visitorCount">0</span></p>
     
     <p>Il est souvent long et pénible de remettre en état sa maison après le passage d'une inondation, meubles détruits, sols difficiles à nettoyer ...</p>
@@ -78,102 +25,14 @@
     <p>Adaptable à la plupart des maisons, l'installation du système est comprise dans l'achat.</p>
     <p>Soyez serein en mettant définitivement votre habitation à l'abri.</p>
     
-    <!-- Bouton "En savoir plus" (reste inchangé) -->
     <a href="#" class="button" id="moreButton">En savoir plus</a>
     
-    <!-- Section sondage avec compteur sur le bouton "Ça m’intéresse" -->
     <div class="survey-container">
       <h2>Ce projet vous intéresse-t-il ?</h2>
       <button class="survey-button" id="interestButton">Ça m’intéresse</button>
-      <button class="survey-button" onclick="sendVote('Ça ne me convient pas totalement')">
-        Ça ne me convient pas totalement
-      </button>
       <p>Nombre de votes pour "Ça m’intéresse" : <span id="buttonCount">0</span></p>
-      <div id="survey-message" class="survey-message"></div>
     </div>
   </div>
-  <script>
-    // Fonctions de gestion des cookies (pour éviter les votes multiples)
-    function setCookie(name, value, days) {
-      var date = new Date();
-      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-      var expires = "expires=" + date.toUTCString();
-      document.cookie = name + "=" + value + ";" + expires + ";path=/";
-    }
-    function getCookie(name) {
-      var decodedCookie = decodeURIComponent(document.cookie);
-      var ca = decodedCookie.split(";");
-      name = name + "=";
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i].trim();
-        if (c.indexOf(name) === 0) {
-          return c.substring(name.length);
-        }
-      }
-      return "";
-    }
-    function hasVotedAlready() {
-      return getCookie("hasVoted") === "true";
-    }
-    // Fonction pour envoyer le vote via Google Forms
-    function sendVote(answer) {
-      var msg = document.getElementById("survey-message");
-      if (hasVotedAlready()) {
-        msg.textContent = "Vous avez déjà voté, merci !";
-        return;
-      }
-      setCookie("hasVoted", "true", 365);
-      msg.textContent = "Merci pour votre vote !";
-      
-      // Ouvre une nouvelle fenêtre pour soumettre le formulaire de vote
-      var newWindow = window.open("", "_blank");
-      newWindow.document.open();
-      newWindow.document.write("<html><head><meta charset='UTF-8'></head><body>");
-      newWindow.document.write("<form id='voteForm' method='POST' action='https://docs.google.com/forms/d/e/1FAIpQLSf6g7OSR0P0sQ89bHKDY2zxRjLCVcmf2eahnQXQms62vN58SQ/formResponse'>");
-      newWindow.document.write("<input type='hidden' name='entry.1534549768' value='" + answer + "'>");
-      newWindow.document.write("</form>");
-      newWindow.document.write("<script>document.getElementById('voteForm').submit();<\/script>");
-      newWindow.document.write("</body></html>");
-      newWindow.document.close();
-    }
-    
-    // -------------------------------
-    // Intégration CountAPI pour les compteurs
-    // -------------------------------
-    // D'après la documentation, il est recommandé d'utiliser le nom de domaine de votre site pour le namespace.
-    // Ici, nous utilisons un namespace simplifié en minuscules sans caractères spéciaux.
-    const visitorUrl = 'https://api.countapi.xyz/hit/sauvezlesmeubles/visitors';
-    const interestUrl  = 'https://api.countapi.xyz/hit/sauvezlesmeubles/interest';
-    
-    // Incrémente et affiche le compteur de visiteurs lors du chargement de la page
-    fetch(visitorUrl)
-      .then(response => response.json())
-      .then(data => {
-        console.log("Visitor counter data:", data);
-        document.getElementById("visitorCount").innerText = data.value;
-      })
-      .catch(error => console.error("Erreur visitorCount:", error));
-    
-    // Ajoute un listener sur le bouton "Ça m’intéresse"
-    document.getElementById("interestButton").addEventListener('click', function(e) {
-      e.preventDefault();
-      console.log("Bouton 'Ça m’intéresse' cliqué");
-      
-      if (!hasVotedAlready()) {
-        fetch(interestUrl)
-          .then(response => response.json())
-          .then(data => {
-            console.log("Interest counter data:", data);
-            document.getElementById("buttonCount").innerText = data.value;
-          })
-          .catch(error => console.error("Erreur interestCount:", error));
-      } else {
-        console.log("L'utilisateur a déjà voté.");
-      }
-      
-      // Envoie le vote via Google Forms
-      sendVote("Ça m’intéresse");
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
